@@ -5,14 +5,14 @@ const normalizeDate = (dateString) => {
   return new Date(dateString).toISOString().split("T")[0];
 };
 
-const ContactForm = ({ existingContact = {}, updateCallback }) => {
-    const [banktransactionDate, setBankTransactionDate] = useState(normalizeDate(existingContact.banktransactionDate) || "");
-    const [banktransactionDescription, setBankTransactionDescription] = useState(existingContact.banktransactionDescription || "");
-    const [banktransactionAmount, setBankTransactionAmount] = useState(existingContact.banktransactionAmount || "");
-    const [banktransactionType, setBankTransactionType] = useState(existingContact.banktransactionType || "");
-    const [banktransactionAmountbalance, setBankTransactionAmountBalance] = useState(existingContact.banktransactionAmountbalance || "");
+const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
+    const [banktransactionDate, setBankTransactionDate] = useState(normalizeDate(existingTransaction.banktransactionDate) || "");
+    const [banktransactionDescription, setBankTransactionDescription] = useState(existingTransaction.banktransactionDescription || "");
+    const [banktransactionAmount, setBankTransactionAmount] = useState(existingTransaction.banktransactionAmount || "");
+    const [banktransactionType, setBankTransactionType] = useState(existingTransaction.banktransactionType || "");
+    const [banktransactionAmountbalance, setBankTransactionAmountBalance] = useState(existingTransaction.banktransactionAmountbalance || "");
 
-    const updating = Object.entries(existingContact).length !== 0
+    const updating = Object.entries(existingTransaction).length !== 0
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -24,7 +24,7 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
             banktransactionType,
             banktransactionAmountbalance
         }
-        const url = "http://127.0.0.1:5000/" + (updating ? `update_bankTransaction/${existingContact.banktransactionId}` : "create_bankTransaction")
+        const url = "http://127.0.0.1:5000/" + (updating ? `update_bankTransaction/${existingTransaction.banktransactionId}` : "create_bankTransaction")
         const options = {
             method: updating ? "PATCH" : "POST",
             headers: {
@@ -94,4 +94,4 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
 };
 
 
-export default ContactForm
+export default BankTransactionForm

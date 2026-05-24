@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react";
-import ContactList from "./ContactList";
+import BankTransactionList from "./BankTransactionList";
 import "./App.css";
-import ContactForm from "./ContactForm";
+import BankTransactionForm from "./BankTransactionForm";
 
 function App() {
-  const [contacts, setContacts] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentContact, setCurrentContact] = useState({})
+  const [currentTransaction, setCurrentTransaction] = useState({})
 
-  useEffect(() => {
-    fetchContacts()
-  }, []);
-
-  const fetchContacts = async () => {
+  const fetchTransaction = async () => {
     const response = await fetch("http://127.0.0.1:5000/bankTransactions");
     const data = await response.json();
-    setContacts(data.bankTransactions);
+    setTransactions(data.bankTransactions);
   };
+
+  useEffect(() => {
+    fetchTransaction()
+  }, []);
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setCurrentContact({})
+    setCurrentTransaction({})
   }
 
   const openCreateModal = () => {
@@ -29,23 +29,23 @@ function App() {
 
   const openEditModal = (contact) => {
     if (isModalOpen) return
-    setCurrentContact(contact)
+    setCurrentTransaction(contact)
     setIsModalOpen(true)
   }
 
   const onUpdate = () => {
     closeModal()
-    fetchContacts()
+    fetchTransaction()
   }
 
   return (
     <>
-      <ContactList contacts={contacts} updateContact={openEditModal} updateCallback={onUpdate} />
-      <button onClick={openCreateModal}>Create New Contact</button>
+      <BankTransactionList transactions={transactions} updateTransaction={openEditModal} updateCallback={onUpdate} />
+      <button onClick={openCreateModal}>Create New Transaction</button>
       {isModalOpen && <div className="modal">
         <div className="modal-content">
           <span className="close" onClick={closeModal}>&times;</span>
-          <ContactForm existingContact={currentContact} updateCallback={onUpdate} />
+          <BankTransactionForm existingTransaction={currentTransaction} updateCallback={onUpdate} />
         </div>
       </div>
       }

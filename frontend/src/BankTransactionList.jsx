@@ -1,6 +1,6 @@
-import React from "react"
+// import React from "react"
 
-const ContactList = ({ contacts, updateContact, updateCallback }) => {
+const BankTransactionList = ({ transactions, updateTransaction, updateCallback }) => {
     const onDelete = async (tsc_id) => {
         try {
             const options = {
@@ -18,7 +18,7 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
     }
 
     return <div>
-        <h2>Contacts</h2>
+        <h2>Bank Transactions List</h2>
         <table>
             <thead>
                 <tr>
@@ -31,17 +31,16 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
                 </tr>
             </thead>
             <tbody>
-                {console.log(contacts)}
-                {contacts.map((contact) => (
-                    <tr key={contact.banktransactionId}>
-                        <td>{new Date(contact.banktransactionDate).toLocaleDateString("en-GB")}</td>
-                        <td>{contact.banktransactionDescription}</td>
-                        <td>{contact.banktransactionAmount}</td>
-                        <td>{contact.banktransactionType}</td>
-                        <td>{contact.banktransactionAmountbalance}</td>
+                {transactions.map((transaction) => (
+                    <tr key={transaction.banktransactionId}>
+                        <td>{new Date(transaction.banktransactionDate).toLocaleDateString("en-GB")}</td>
+                        <td>{transaction.banktransactionDescription}</td>
+                        <td>{transaction.banktransactionAmount}</td>
+                        <td>{transaction.banktransactionType}</td>
+                        <td>{transaction.banktransactionAmountbalance}</td>
                         <td>
-                            <button onClick={() => updateContact(contact)}>Update</button>
-                            <button onClick={() => onDelete(contact.banktransactionId)}>Delete</button>
+                            <button onClick={() => updateTransaction(transaction)}>Update</button>
+                            <button onClick={() => onDelete(transaction.banktransactionId)}>Delete</button>
                         </td>
                     </tr>
                 ))}
@@ -50,4 +49,4 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
     </div>
 }
 
-export default ContactList
+export default BankTransactionList
