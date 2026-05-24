@@ -58,7 +58,6 @@ def update_bankTransaction(tsc_id):
 
     data = request.json
     bankTransaction.tsc_dt = data.get("banktransactionDate", bankTransaction.tsc_dt)
-    bankTransaction.tsc_amt = data.get("banktransactionCategory", bankTransaction.tsc_amt)
     bankTransaction.tsc_descrp = data.get("banktransactionDescription", bankTransaction.tsc_descrp)
     bankTransaction.tsc_amt = data.get("banktransactionAmount", bankTransaction.tsc_amt)
     bankTransaction.tsc_type = data.get("banktransactionType", bankTransaction.tsc_type)
