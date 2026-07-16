@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask import request, jsonify
 from config import app, db
 from models import BankTransactions
@@ -14,6 +16,24 @@ def get_bankTransactions():
         "bankTransactions": json_bankTransactions
     })
 
+@app.route("/bankTransactions/<int:year>/<int:month>")
+def get_transactions(year, month):
+
+    start = date(year, month, 1)
+
+    if month == 12:
+        end = date(year + 1, 1, 1)
+    else:
+        end = date(year, month + 1, 1)
+
+    transactions = BankTransactions.query.filter(
+    BankTransactions.tsc_dt >= start,
+    BankTransactions.tsc_dt < end
+    ).all()
+
+    return jsonify([
+        transaction.to_json() for transaction in transactions
+    ])
 
 @app.route("/create_bankTransaction", methods=["POST"])
 def create_bankTransaction():

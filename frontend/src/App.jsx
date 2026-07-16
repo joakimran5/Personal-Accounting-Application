@@ -7,16 +7,29 @@ function App() {
   const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentTransaction, setCurrentTransaction] = useState({})
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // const fetchTransaction = async () => {
+  //   const response = await fetch("http://127.0.0.1:5000/bankTransactions");
+  //   const data = await response.json();
+  //   setTransactions(data.bankTransactions);
+  // };
 
   const fetchTransaction = async () => {
-    const response = await fetch("http://127.0.0.1:5000/bankTransactions");
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth() + 1;
+
+    const response = await fetch(
+        `http://127.0.0.1:5000/bankTransactions/${year}/${month}`
+    );
+
     const data = await response.json();
-    setTransactions(data.bankTransactions);
-  };
+    setTransactions(data);
+};
 
   useEffect(() => {
-    fetchTransaction()
-  }, []);
+    fetchTransaction();
+}, [currentMonth]);
 
   const closeModal = () => {
     setIsModalOpen(false)
@@ -38,9 +51,33 @@ function App() {
     fetchTransaction()
   }
 
+      const previousMonth = () => {
+    setCurrentMonth(prev => {
+        const date = new Date(prev);
+        date.setMonth(date.getMonth() - 1);
+        return date;
+    });
+    };
+
+    const nextMonth = () => {
+        setCurrentMonth(prev => {
+            const date = new Date(prev);
+            date.setMonth(date.getMonth() + 1);
+            return date;
+        });
+    };
+
+
   return (
     <>
-      <BankTransactionList transactions={transactions} updateTransaction={openEditModal} updateCallback={onUpdate} />
+      <BankTransactionList 
+      transactions={transactions} 
+      updateTransaction={openEditModal} 
+      updateCallback={onUpdate}
+      previousMonth={previousMonth}
+      nextMonth={nextMonth}
+      currentMonth={currentMonth}
+      />
       <button onClick={openCreateModal}>Create New Transaction</button>
       {isModalOpen && <div className="modal">
         <div className="modal-content">

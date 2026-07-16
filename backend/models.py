@@ -6,7 +6,7 @@ class BankTransactions(db.Model):
     __table_args__ = {"schema": "bank"}
 
     tsc_id = db.Column(db.Integer, primary_key=True)
-    tsc_dt = db.Column(db.String(80), unique=False, nullable=False)
+    tsc_dt = db.Column(db.Date, unique=False, nullable=False)
     tsc_cat = db.Column(db.String(80), unique=False, nullable=False)
     tsc_descrp = db.Column(db.String(120), unique=False, nullable=False)
     tsc_amt = db.Column(db.String(80), unique=False, nullable=False)

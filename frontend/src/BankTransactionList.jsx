@@ -1,6 +1,10 @@
-// import React from "react"
-
-const BankTransactionList = ({ transactions, updateTransaction, updateCallback }) => {
+const BankTransactionList = ({ 
+    transactions,  
+    updateTransaction, 
+    updateCallback,
+    previousMonth,
+    nextMonth,
+    currentMonth }) => {
     const onDelete = async (tsc_id) => {
         try {
             const options = {
@@ -17,8 +21,19 @@ const BankTransactionList = ({ transactions, updateTransaction, updateCallback }
         }
     }
 
-    return <div>
+   
+
+
+
+    return (
+    <div>
         <h2>Bank Transactions List</h2>
+         <h2>
+    {currentMonth.toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+    })}
+</h2>
         <table>
             <thead>
                 <tr>
@@ -46,7 +61,11 @@ const BankTransactionList = ({ transactions, updateTransaction, updateCallback }
                 ))}
             </tbody>
         </table>
+       
+
+<button onClick={previousMonth}>Previous</button>
+<button onClick={nextMonth}>Next</button>
     </div>
-}
+    )}
 
 export default BankTransactionList

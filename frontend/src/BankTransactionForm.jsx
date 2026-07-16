@@ -41,6 +41,8 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
         }
     };
 
+
+
     return (
         <form onSubmit={onSubmit}>
             <div>
@@ -90,6 +92,7 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
             </div>
             <button type="submit">{updating ? "Update" : "Create"}</button>
         </form>
+        
     );
 };
 
