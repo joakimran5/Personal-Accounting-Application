@@ -73,13 +73,23 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
                 />
             </div>
             <div>
-                <label htmlFor="banktransactionType">Type:</label>
+                {/* <label htmlFor="banktransactionType">Type:</label>
                 <input
                     type="text"
                     id="banktransactionType"
                     value={banktransactionType}
                     onChange={(e) => setBankTransactionType(e.target.value)}
-                />
+                /> */}
+                <label htmlFor="banktransactionType">Type:</label>
+<select
+    id="banktransactionType"
+    value={banktransactionType}
+    onChange={(e) => setBankTransactionType(e.target.value)}
+>
+    <option value="">-- Select Type --</option>
+    <option value="DBT">DBT (Debit)</option>
+    <option value="CDT">CDT (Credit)</option>
+</select>
             </div>
             <div>
                 <label htmlFor="banktransactionAmountbalance">Balance:</label>

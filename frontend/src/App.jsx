@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import BankTransactionList from "./BankTransactionList";
 import "./App.css";
 import BankTransactionForm from "./BankTransactionForm";
+import BankTransactionSheet from "./BankTransactionSheet";
 
 function App() {
   const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentTransaction, setCurrentTransaction] = useState({})
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   // const fetchTransaction = async () => {
   //   const response = await fetch("http://127.0.0.1:5000/bankTransactions");
@@ -67,6 +69,15 @@ function App() {
         });
     };
 
+    const openSheetModal = () => {
+    setIsSheetOpen(true);
+};
+
+
+const closeSheetModal = () => {
+    setIsSheetOpen(false);
+};
+
 
   return (
     <>
@@ -86,6 +97,31 @@ function App() {
         </div>
       </div>
       }
+      <button onClick={openSheetModal}>Open Transaction Sheet</button>
+      {isSheetOpen && 
+<div className="modal">
+
+    <div className="modal-content">
+
+        <span 
+        className="close" 
+        onClick={closeSheetModal}>
+        &times;
+        </span>
+
+
+        <BankTransactionSheet 
+            updateCallback={()=>{
+                closeSheetModal();
+                fetchTransaction();
+            }}
+        />
+
+
+    </div>
+
+</div>
+}
     </>
   );
 }

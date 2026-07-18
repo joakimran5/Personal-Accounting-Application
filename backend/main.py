@@ -35,6 +35,7 @@ def get_transactions(year, month):
         transaction.to_json() for transaction in transactions
     ])
 
+#Single Row Creation
 @app.route("/create_bankTransaction", methods=["POST"])
 def create_bankTransaction():
     bankTransaction_date = request.json.get("banktransactionDate")
@@ -68,6 +69,39 @@ def create_bankTransaction():
 
     return jsonify({"message": "Transaction History created!"}), 201
 
+# For Bank TransactionSheet Multiple Rows Creation
+@app.route("/create_bankTransactions", methods=["POST"])
+def create_bankTransactions():
+
+    transactions = request.json
+
+    try:
+
+        for row in transactions:
+
+            new_transaction = BankTransactions(
+                tsc_dt=row["banktransactionDate"],
+                tsc_cat=row["banktransactionCategory"],
+                tsc_descrp=row["banktransactionDescription"],
+                tsc_amt=row["banktransactionAmount"],
+                tsc_type=row["banktransactionType"],
+                amt_bal=row["banktransactionAmountbalance"]
+            )
+
+            db.session.add(new_transaction)
+
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": str(e)
+        }),400
+
+
+    return jsonify({
+        "message":"Transactions created"
+    }),201
 
 @app.route("/update_bankTransaction/<int:tsc_id>", methods=["PATCH"])
 def update_bankTransaction(tsc_id):
