@@ -4,9 +4,6 @@ const BankTransactionSheet = ({ currentMonth, updateCallback }) => {
 
     const [rows, setRows] = useState([]);
 
-// const defaultDate =
-//     currentMonth.toISOString().split("T")[0];
-
 const handleChange = (index, field, value) => {
     const updatedRows = [...rows];
 
@@ -165,7 +162,7 @@ useEffect(() => {
 <th>Amount</th>
 <th>Type</th>
 <th>Balance</th>
-<th></th>
+<th>Erase</th>
 </tr>
 </thead>
 

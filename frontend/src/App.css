@@ -41,4 +41,51 @@
     color: rgb(0, 0, 0);
     font-weight: bold;
 }
+table.transaction-table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
 
+th {
+    background: #1f2937;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ddd;
+}
+td.empty-table {
+    text-align: center;
+    font-style: italic;
+    color: #6b7280;
+}
+
+tr:hover {
+    background-color: #f3f4f6;
+}
+h2.title {
+    text-align: center;
+    font-size: 24px;
+    color: #1f2937;
+    margin-top: 20px;
+}
+h2.month-title {
+    text-align: center;
+    font-size: 30px;
+    color: #1f2937;
+    margin-top: 20px;
+}
+.month-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
