@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+
 
 const normalizeDate = (dateString) => {
   if (!dateString) return "";
@@ -63,6 +65,20 @@ const saveTransactions = async () => {
     }
 };
 
+const [categories, setCategories] = useState([]);
+const [descriptions, setDescriptions] = useState([]);
+
+useEffect(() => {
+
+    fetch("http://127.0.0.1:5000/transactionCategories")
+        .then(res => res.json())
+        .then(data => setCategories(data));
+
+    fetch("http://127.0.0.1:5000/transactionDescriptions")
+        .then(res => res.json())
+        .then(data => setDescriptions(data));
+
+}, []);
 
     return (
 <div>
@@ -98,22 +114,52 @@ handleChange(index,"banktransactionDate",e.target.value)}
 
 
 <td>
-<input
-type="text"
-value={row.banktransactionCategory}
-onChange={(e)=>
-handleChange(index,"banktransactionCategory",e.target.value)}
-/>
+    <input
+        list="categoryOptions"
+        value={row.banktransactionCategory}
+        onChange={(e) =>
+            handleChange(
+                index,
+                "banktransactionCategory",
+                e.target.value
+            )
+        }
+    />
+
+    <datalist id="categoryOptions">
+
+{
+    categories.map((category,index)=>(
+        <option 
+            key={index}
+            value={category}
+        />
+    ))
+}
+
+</datalist>
 </td>
 
 
 <td>
 <input
-type="text"
+list="descriptionOptions"
 value={row.banktransactionDescription}
 onChange={(e)=>
 handleChange(index,"banktransactionDescription",e.target.value)}
 />
+    <datalist id="descriptionOptions">
+
+{
+    descriptions.map((description,index)=>(
+        <option 
+            key={index}
+            value={description}
+        />
+    ))
+}
+
+</datalist>
 </td>
 
 

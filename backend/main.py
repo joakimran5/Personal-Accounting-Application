@@ -103,6 +103,34 @@ def create_bankTransactions():
         "message":"Transactions created"
     }),201
 
+#Dropdown for Transaction Categories
+@app.route("/transactionCategories", methods=["GET"])
+def get_transactionCategories():
+
+    categories = db.session.query(
+        BankTransactions.tsc_cat
+    ).distinct().all()
+
+    return jsonify([
+        category[0] for category in categories
+    ])
+
+#Dropdown for Transaction Descriptions
+@app.route("/transactionDescriptions", methods=["GET"])
+def get_transactionDescriptions():
+
+    descriptions = db.session.query(
+        BankTransactions.tsc_descrp
+    ).distinct().all()
+
+    return jsonify([
+        description[0] for description in descriptions
+    ])
+
+    return jsonify([
+        category[0] for category in categories
+    ])
+
 @app.route("/update_bankTransaction/<int:tsc_id>", methods=["PATCH"])
 def update_bankTransaction(tsc_id):
     bankTransaction = BankTransactions.query.get(tsc_id)
