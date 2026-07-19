@@ -8,7 +8,12 @@ function App() {
   const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentTransaction, setCurrentTransaction] = useState({})
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const date = new Date();
+    date.setDate(1);
+    date.setMonth(date.getMonth() - 1);
+    return date;
+});
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   // const fetchTransaction = async () => {
@@ -111,6 +116,7 @@ const closeSheetModal = () => {
 
 
         <BankTransactionSheet 
+            currentMonth={currentMonth}
             updateCallback={()=>{
                 closeSheetModal();
                 fetchTransaction();

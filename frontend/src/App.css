@@ -23,3 +23,22 @@
     font-size: 28px;
     font-weight: bold;
 }
+
+.credit {
+    color: green;
+    font-weight: bold;
+}
+
+.debit {
+    color: red;
+    font-weight: bold;
+}
+.balanceCredit {
+    color: rgb(0, 122, 43);
+    font-weight: bold;
+}
+.balanceDebit {
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+

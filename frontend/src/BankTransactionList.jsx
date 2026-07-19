@@ -40,7 +40,7 @@ const BankTransactionList = ({
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
-                    <th>Type</th>
+                    {/* <th>Type</th> */}
                     <th>Balance</th>
                     <th>Actions</th>
                 </tr>
@@ -50,9 +50,30 @@ const BankTransactionList = ({
                     <tr key={transaction.banktransactionId}>
                         <td>{new Date(transaction.banktransactionDate).toLocaleDateString("en-GB")}</td>
                         <td>{transaction.banktransactionDescription}</td>
-                        <td>{transaction.banktransactionAmount}</td>
-                        <td>{transaction.banktransactionType}</td>
-                        <td>{transaction.banktransactionAmountbalance}</td>
+                        <td
+className={
+    transaction.banktransactionType === "CDT"
+    ? "credit"
+    : "debit"
+}
+>
+{
+transaction.banktransactionType === "CDT"
+? `+${transaction.banktransactionAmount}`
+: `-${transaction.banktransactionAmount}`
+}
+</td>
+
+{/* <td>{transaction.banktransactionType}</td> */}
+                        <td
+    className={
+        transaction.banktransactionType === "CDT"
+        ? "balanceCredit"
+        : "balanceDebit"
+    }
+>
+    {transaction.banktransactionAmountbalance}
+</td>
                         <td>
                             <button onClick={() => updateTransaction(transaction)}>Update</button>
                             <button onClick={() => onDelete(transaction.banktransactionId)}>Delete</button>

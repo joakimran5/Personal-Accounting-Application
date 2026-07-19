@@ -1,72 +1,123 @@
 import { useState, useEffect } from "react";
 
+const BankTransactionSheet = ({ currentMonth, updateCallback }) => {
 
+    const [rows, setRows] = useState([]);
 
-const normalizeDate = (dateString) => {
-  if (!dateString) return "";
-  return new Date(dateString).toISOString().split("T")[0];
-};
-
-const BankTransactionSheet = ({ existingTransaction = {}, updateCallback }) => {
-    const [rows, setRows] = useState([
-    {
-        banktransactionDate: "",
-        banktransactionCategory: "",
-        banktransactionDescription: "",
-        banktransactionAmount: "",
-        banktransactionType: "",
-        banktransactionAmountbalance: ""
-    }
-]);
+// const defaultDate =
+//     currentMonth.toISOString().split("T")[0];
 
 const handleChange = (index, field, value) => {
     const updatedRows = [...rows];
 
     updatedRows[index][field] = value;
 
-    setRows(updatedRows);
+    setRows(calculateBalances(updatedRows));
 };
 
 const addRow = () => {
-    setRows([
+
+    const lastRow = rows[rows.length - 1];
+
+    const updatedRows = [
         ...rows,
         {
-            banktransactionDate: "",
+            banktransactionDate: lastRow.banktransactionDate,
             banktransactionCategory: "",
             banktransactionDescription: "",
             banktransactionAmount: "",
-            banktransactionType: "",
+            banktransactionType:  "DBT",
             banktransactionAmountbalance: ""
         }
-    ]);
+    ];
+
+    setRows(calculateBalances(updatedRows));
 };
 
 const deleteRow = (index) => {
-    const updatedRows = rows.filter((_, i) => i !== index);
-    setRows(updatedRows);
+
+    const updatedRows =
+        rows.filter((_, i) => i !== index);
+
+    setRows(calculateBalances(updatedRows));
+
 };
 
 const saveTransactions = async () => {
 
-    const response = await fetch(
-        "http://127.0.0.1:5000/create_bankTransactions",
-        {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(rows)
+    try {
+
+        const response = await fetch(
+            "http://127.0.0.1:5000/create_bankTransactions",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(rows)
+            }
+        );
+
+        if (response.ok) {
+            updateCallback();
+        } else {
+            alert("Failed to save transactions.");
         }
-    );
 
-
-    if(response.status===201){
-        updateCallback();
+    } catch (error) {
+        console.error(error);
     }
+
 };
 
 const [categories, setCategories] = useState([]);
 const [descriptions, setDescriptions] = useState([]);
+const calculateBalances = (updatedRows) => {
+
+    if(updatedRows.length === 0){
+        return [];
+    }
+
+
+    let balance =
+        Number(updatedRows[0].banktransactionAmountbalance) || 0;
+
+
+    return updatedRows.map((row,index)=>{
+
+
+        // first row is manually entered
+        if(index === 0){
+
+            return row;
+
+        }
+
+
+        const amount =
+            Number(row.banktransactionAmount) || 0;
+
+
+        if(row.banktransactionType === "DBT"){
+            balance -= amount;
+        }
+
+
+        if(row.banktransactionType === "CDT"){
+            balance += amount;
+        }
+
+
+        return {
+            ...row,
+            banktransactionAmountbalance:
+                balance.toFixed(2)
+        };
+
+
+    });
+
+};
 
 useEffect(() => {
 
@@ -78,11 +129,33 @@ useEffect(() => {
         .then(res => res.json())
         .then(data => setDescriptions(data));
 
+  
+
 }, []);
+
+useEffect(() => {
+
+    const firstDay =
+        `${currentMonth.getFullYear()}-${
+            String(currentMonth.getMonth() + 1).padStart(2, "0")
+        }-01`;
+
+    setRows([
+        {
+            banktransactionDate: firstDay,
+            banktransactionCategory: "",
+            banktransactionDescription: "",
+            banktransactionAmount: "",
+            banktransactionType: "DBT",
+            banktransactionAmountbalance: ""
+        }
+    ]);
+
+}, [currentMonth]);
+
 
     return (
 <div>
-
 <table>
 <thead>
 <tr>
@@ -182,7 +255,6 @@ handleChange(index,"banktransactionType",e.target.value)
 }
 >
 
-<option value="">Select</option>
 <option value="DBT">DBT</option>
 <option value="CDT">CDT</option>
 
@@ -192,12 +264,31 @@ handleChange(index,"banktransactionType",e.target.value)
 
 
 <td>
+
+{
+index === 0 ?
+
 <input
 type="number"
 value={row.banktransactionAmountbalance}
 onChange={(e)=>
-handleChange(index,"banktransactionAmountbalance",e.target.value)}
+handleChange(
+index,
+"banktransactionAmountbalance",
+e.target.value
+)}
 />
+
+:
+
+<input
+type="number"
+value={row.banktransactionAmountbalance}
+readOnly
+/>
+
+}
+
 </td>
 
 
