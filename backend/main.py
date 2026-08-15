@@ -37,40 +37,6 @@ def get_transactions(year, month):
         transaction.to_json() for transaction in transactions
     ])
 
-# #Single Row Creation
-# @app.route("/create_bankTransaction", methods=["POST"])
-# def create_bankTransaction():
-#     bankTransaction_date = request.json.get("banktransactionDate")
-#     bankTransaction_category = request.json.get("banktransactionCategory")
-#     bankTransaction_description = request.json.get("banktransactionDescription")
-#     bankTransaction_amount = request.json.get("banktransactionAmount")
-#     bankTransaction_type = request.json.get("banktransactionType")
-#     bankAmount_balance = request.json.get("banktransactionAmountbalance")
-
-
-#     if not bankTransaction_date or not bankTransaction_amount or not bankTransaction_type:
-#     # if not bankTransaction_date:
-#         return (
-#             jsonify({"message": "You must include a date, amount and type"}),
-#             400,
-#         )
-
-#     new_bankTransaction = BankTransactions(
-#                                    tsc_dt=bankTransaction_date, 
-#                                    tsc_cat=bankTransaction_category, 
-#                                    tsc_descrp=bankTransaction_description, 
-#                                    tsc_amt=bankTransaction_amount, 
-#                                    tsc_type=bankTransaction_type, 
-#                                    amt_bal=bankAmount_balance
-#                                    )
-#     try:
-#         db.session.add(new_bankTransaction)
-#         db.session.commit()
-#     except Exception as e:
-#         return jsonify({"message": str(e)}), 400
-
-#     return jsonify({"message": "Transaction History created!"}), 201
-
 # For Bank TransactionSheet Multiple Rows Creation
 @app.route("/create_bankTransactions", methods=["POST"])
 def create_bankTransactions():
@@ -82,12 +48,12 @@ def create_bankTransactions():
         for row in transactions:
 
             new_transaction = BankTransactions(
-                tsc_dt=row["banktransactionDate"],
-                tsc_cat=row["banktransactionCategory"],
-                tsc_descrp=row["banktransactionDescription"],
-                tsc_amt=row["banktransactionAmount"],
-                tsc_type=row["banktransactionType"],
-                amt_bal=row["banktransactionAmountbalance"]
+                tsc_dt=row["transactionDate"],
+                tsc_cat=row["transactionCategory"],
+                tsc_descrp=row["transactionDescription"],
+                tsc_amt=row["transactionAmount"],
+                tsc_type=row["transactionType"],
+                amt_bal=row["transactionAmountbalance"]
             )
 
             db.session.add(new_transaction)
@@ -129,10 +95,6 @@ def get_transactionDescriptions():
         description[0] for description in descriptions
     ])
 
-    # return jsonify([
-    #     category[0] for category in categories
-    # ])
-
 @app.route("/update_bankTransaction/<int:tsc_id>", methods=["PATCH"])
 def update_bankTransaction(tsc_id):
     bankTransaction = BankTransactions.query.get(tsc_id)
@@ -141,11 +103,12 @@ def update_bankTransaction(tsc_id):
         return jsonify({"message": "Bank Transaction not found"}), 404
 
     data = request.json
-    bankTransaction.tsc_dt = data.get("banktransactionDate", bankTransaction.tsc_dt)
-    bankTransaction.tsc_descrp = data.get("banktransactionDescription", bankTransaction.tsc_descrp)
-    bankTransaction.tsc_amt = data.get("banktransactionAmount", bankTransaction.tsc_amt)
-    bankTransaction.tsc_type = data.get("banktransactionType", bankTransaction.tsc_type)
-    bankTransaction.amt_bal = data.get("banktransactionAmountbalance", bankTransaction.amt_bal)
+    bankTransaction.tsc_dt = data.get("transactionDate", bankTransaction.tsc_dt)
+    bankTransaction.tsc_cat = data.get("transactionCategory", bankTransaction.tsc_cat)
+    bankTransaction.tsc_descrp = data.get("transactionDescription", bankTransaction.tsc_descrp)
+    bankTransaction.tsc_amt = data.get("transactionAmount", bankTransaction.tsc_amt)
+    bankTransaction.tsc_type = data.get("transactionType", bankTransaction.tsc_type)
+    bankTransaction.amt_bal = data.get("transactionAmountbalance", bankTransaction.amt_bal)
 
     db.session.commit()
 
@@ -164,12 +127,6 @@ def delete_bankTransaction(tsc_id):
 
     return jsonify({"message": "Bank Transaction deleted!"}), 200
 
-
-# if __name__ == "__main__":
-#     with app.app_context():
-#         db.create_all()
-
-#     app.run(debug=True)
 #######################################################################################
 #######################################################################################
 # TnG E-wallet Transaction History API Endpoints
@@ -186,38 +143,59 @@ def get_tngTransactions():
         "tngTransactions": json_tngTransactions
     })
 
+@app.route("/tngTransactions/<int:year>/<int:month>")
+def get_tngtransactions(year, month):
+
+    start = date(year, month, 1)
+
+    if month == 12:
+        end = date(year + 1, 1, 1)
+    else:
+        end = date(year, month + 1, 1)
+
+    transactions = TnGTransactions.query.filter(
+    TnGTransactions.tsc_dt >= start,
+    TnGTransactions.tsc_dt < end
+    ).all()
+
+    return jsonify([
+        transaction.to_json() for transaction in transactions
+    ])
+
 # TnG Transaction Creation
-@app.route("/create_tngTransaction", methods=["POST"])
-def create_tngTransaction():
-    tngTransaction_date = request.json.get("tngtransactionDate")
-    tngTransaction_category = request.json.get("tngtransactionCategory")
-    tngTransaction_description = request.json.get("tngtransactionDescription")
-    tngTransaction_amount = request.json.get("tngtransactionAmount")
-    tngTransaction_type = request.json.get("tngtransactionType")
-    tngAmount_balance = request.json.get("tngtransactionAmountbalance")
+@app.route("/create_tngTransactions", methods=["POST"])
+def create_tngTransactions():
 
-    if not tngTransaction_date or not tngTransaction_amount or not tngTransaction_type:
-    # if not tngTransaction_date:
-        return (
-            jsonify({"message": "You must include a date, amount and type"}),
-            400,
-        )
+    tng_transactions = request.json
 
-    new_tngTransaction = TnGTransactions(
-                                   tsc_dt=tngTransaction_date, 
-                                   tsc_cat=tngTransaction_category, 
-                                   tsc_descrp=tngTransaction_description, 
-                                   tsc_amt=tngTransaction_amount, 
-                                   tsc_type=tngTransaction_type, 
-                                   amt_bal=tngAmount_balance
-                                   )
     try:
-        db.session.add(new_tngTransaction)
-        db.session.commit()
-    except Exception as e:
-        return jsonify({"message": str(e)}), 400
 
-    return jsonify({"message": "Transaction History created!"}), 201
+        for row in tng_transactions:
+
+            new_transaction = TnGTransactions(
+                tsc_dt=row["transactionDate"],
+                tsc_cat=row["transactionCategory"],
+                tsc_descrp=row["transactionDescription"],
+                tsc_amt=row["transactionAmount"],
+                tsc_type=row["transactionType"],
+                # amt_bal=row["transactionAmountbalance"],
+                tsc_time=row["transactionTime"]
+            )
+
+            db.session.add(new_transaction)
+
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": str(e)
+        }),400
+
+
+    return jsonify({
+        "message":"TnG Transactions created"
+    }),201
 
 # Update TnG Transaction
 @app.route("/update_tngTransaction/<int:tsc_id>", methods=["PATCH"])
@@ -228,12 +206,12 @@ def update_tngTransaction(tsc_id):
         return jsonify({"message": "TnG Transaction not found"}), 404
 
     data = request.json
-    tngTransaction.tsc_dt = data.get("tngtransactionDate", tngTransaction.tsc_dt)
-    tngTransaction.tsc_descrp = data.get("tngtransactionDescription", tngTransaction.tsc_descrp)
-    tngTransaction.tsc_amt = data.get("tngtransactionAmount", tngTransaction.tsc_amt)
-    tngTransaction.tsc_type = data.get("tngtransactionType", tngTransaction.tsc_type)
-    tngTransaction.amt_bal = data.get("tngtransactionAmountbalance", tngTransaction.amt_bal)
-    tngTransaction.tsc_time = data.get("tngtransactionTime", tngTransaction.tsc_time)
+    tngTransaction.tsc_dt = data.get("transactionDate", tngTransaction.tsc_dt)
+    tngTransaction.tsc_descrp = data.get("transactionDescription", tngTransaction.tsc_descrp)
+    tngTransaction.tsc_amt = data.get("transactionAmount", tngTransaction.tsc_amt)
+    tngTransaction.tsc_type = data.get("transactionType", tngTransaction.tsc_type)
+    tngTransaction.amt_bal = data.get("transactionAmountbalance", tngTransaction.amt_bal)
+    tngTransaction.tsc_time = data.get("transactionTime", tngTransaction.tsc_time)
 
     db.session.commit()
 

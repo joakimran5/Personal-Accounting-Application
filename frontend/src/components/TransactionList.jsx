@@ -7,39 +7,47 @@ const TransactionList = ({
     previousMonth,
     nextMonth,
     currentMonth,
-    transactionType 
+    transactionPlatform
 
 }) => {
 
     const onDelete = async (tsc_id) => {
         try {
-            const options = {
-                method: "DELETE"
-            };
 
-            const response = await fetch(
-                `http://127.0.0.1:5000/delete_bankTransaction/${tsc_id}`,
-                options
-            );
+        const endpoint =
+            transactionPlatform === "bank"
+                ? "delete_bankTransaction"
+                : "delete_tngTransaction";
 
-            if (response.status === 200) {
-                updateCallback();
-            } else {
-                console.error("Failed to delete");
-            }
+        const url =
+            `http://127.0.0.1:5000/${endpoint}/${tsc_id}`;
 
-        } catch (error) {
-            alert(error);
+        const response = await fetch(url, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            updateCallback();
+        } else {
+            const data = await response.json();
+            console.error(data.message || "Failed to delete");
         }
-    };
+
+    } catch (error) {
+        console.error(error);
+        alert(error);
+    }
+};
 
 
     return (
     <div>
 
         <h2 className="title">
-            Bank Transactions List
-        </h2>
+    {transactionPlatform === "bank"
+        ? "Bank Transaction List"
+        : "TnG Transaction List"}
+</h2>
 
         <h2 className="month-title">
             {currentMonth.toLocaleString("default", {
@@ -98,39 +106,39 @@ const TransactionList = ({
 
                 transactions.map((transaction) => (
 
-                    <tr key={transaction.banktransactionId}>
+                    <tr key={transaction.transactionId}>
 
                         <td>
                             {
                             new Date(
-                                transaction.banktransactionDate
+                                transaction.transactionDate
                             ).toLocaleDateString("en-GB")
                             }
                         </td>
 
 
                         <td>
-                            {transaction.banktransactionDescription}
+                            {transaction.transactionDescription}
                         </td>
 
 
                         <td
                         className={
-                            transaction.banktransactionType === "CDT"
+                            transaction.transactionType === "CDT"
                             ? "credit"
                             : "debit"
                         }
                         >
 
                         {
-                        transaction.banktransactionType === "CDT"
-                        ? `+${Number(transaction.banktransactionAmount)
+                        transaction.transactionType === "CDT"
+                        ? `+${Number(transaction.transactionAmount)
                             .toLocaleString(undefined,{
                                 minimumFractionDigits:0,
                                 maximumFractionDigits:2
                             })}`
 
-                        : `-${Number(transaction.banktransactionAmount)
+                        : `-${Number(transaction.transactionAmount)
                             .toLocaleString(undefined,{
                                 minimumFractionDigits:0,
                                 maximumFractionDigits:2
@@ -141,7 +149,7 @@ const TransactionList = ({
 
 
                         <td>
-                            {transaction.banktransactionAmountbalance}
+                            {transaction.transactionAmountbalance}
                         </td>
 
 
@@ -155,7 +163,7 @@ const TransactionList = ({
 
 
                             <button 
-                            onClick={() => onDelete(transaction.banktransactionId)}
+                            onClick={() => onDelete(transaction.transactionId)}
                             >
                                 Delete
                             </button>

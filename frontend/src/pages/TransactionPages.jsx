@@ -4,7 +4,7 @@ import TransactionUpdateForm from "../components/TransactionUpdateForm";
 import TransactionSheet from "../components/TransactionSheetForm";
 
 function TransactionPage() {
-    const [transactionType, setTransactionType] = useState("bank");
+    const [transactionPlatform, setTransactionPlatform] = useState("bank");
     const [transactions, setTransactions] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [currentTransaction, setCurrentTransaction] = useState({})
@@ -20,8 +20,13 @@ function TransactionPage() {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth() + 1;
 
+    const endpoint =
+        transactionPlatform === "bank"
+            ? "bankTransactions"
+            : "tngTransactions";
+
     const response = await fetch(
-        `http://127.0.0.1:5000/bankTransactions/${year}/${month}`
+        `http://127.0.0.1:5000/${endpoint}/${year}/${month}`
     );
 
     const data = await response.json();
@@ -30,7 +35,7 @@ function TransactionPage() {
 
   useEffect(() => {
     fetchTransaction();
-}, [currentMonth]);
+}, [currentMonth, transactionPlatform]);
 
   const closeModal = () => {
     setIsModalOpen(false)
@@ -72,14 +77,14 @@ function TransactionPage() {
 const closeSheetModal = () => {
     setIsSheetOpen(false);
 };
-console.log("transactionType:", transactionType)
+
 return(
 <>
-  <button onClick={() => setTransactionType("bank")}>
+  <button onClick={() => setTransactionPlatform("bank")}>
     Bank
 </button>
 
-<button onClick={() => setTransactionType("tng")}>
+<button onClick={() => setTransactionPlatform("tng")}>
     TnG
 </button>
  <TransactionList 
@@ -89,7 +94,7 @@ return(
       previousMonth={previousMonth}
       nextMonth={nextMonth}
       currentMonth={currentMonth}
-      transactionType={transactionType}
+      transactionPlatform={transactionPlatform}
       />
       {isModalOpen && <div className="modal">
         <div className="modal-content">
@@ -97,7 +102,7 @@ return(
           <TransactionUpdateForm 
           existingTransaction={currentTransaction} 
           updateCallback={onUpdate}
-          transactionType={transactionType}
+          transactionPlatform={transactionPlatform}
            />
         </div>
       </div>
@@ -116,7 +121,7 @@ return(
 
 
         <TransactionSheet 
-            transactionType={transactionType}
+            transactionPlatform={transactionPlatform}
             currentMonth={currentMonth}
             updateCallback={()=>{
                 closeSheetModal();

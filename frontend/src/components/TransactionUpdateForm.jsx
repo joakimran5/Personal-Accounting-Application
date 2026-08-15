@@ -5,32 +5,43 @@ const normalizeDate = (dateString) => {
   return new Date(dateString).toISOString().split("T")[0];
 };
 
-const TransactionUpdateForm = ({ existingTransaction = {}, updateCallback, transactionType }) => {
-    const [banktransactionDate, setBankTransactionDate] = useState(normalizeDate(existingTransaction.banktransactionDate) || "");
-    const [banktransactionDescription, setBankTransactionDescription] = useState(existingTransaction.banktransactionDescription || "");
-    const [banktransactionAmount, setBankTransactionAmount] = useState(existingTransaction.banktransactionAmount || "");
-    const [banktransactionType, setBankTransactionType] = useState(existingTransaction.banktransactionType || "");
-    const [banktransactionAmountbalance, setBankTransactionAmountBalance] = useState(existingTransaction.banktransactionAmountbalance || "");
+const TransactionUpdateForm = ({ existingTransaction = {}, updateCallback, transactionPlatform }) => {
+    const [transactionDate, setTransactionDate] = useState(normalizeDate(existingTransaction.transactionDate) || "");
+    const [transactionDescription, setTransactionDescription] = useState(existingTransaction.transactionDescription || "");
+    const [transactionAmount, setTransactionAmount] = useState(existingTransaction.transactionAmount || "");
+    const [transactionType, setTransactionType] = useState(existingTransaction.transactionType || "");
+    const [transactionAmountbalance, setTransactionAmountBalance] = useState(existingTransaction.transactionAmountbalance || "");
 
     const onSubmit = async (e) => {
         e.preventDefault()
 
         const data = {
-            banktransactionDate,
-            banktransactionDescription,
-            banktransactionAmount,
-            banktransactionType,
-            banktransactionAmountbalance
+            transactionDate,
+            transactionDescription,
+            transactionAmount,
+            transactionType,
+            transactionAmountbalance
         }
-        const url = `http://127.0.0.1:5000/update_bankTransaction/${existingTransaction.banktransactionId}`
+        const transactionId =existingTransaction.transactionId;
+
+    const endpoint =
+        transactionPlatform === "bank"
+            ? "update_bankTransaction"
+            : "update_tngTransaction";
+
+    const url =
+        `http://127.0.0.1:5000/${endpoint}/${transactionId}`;
+
         const options = {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
-        }
-        const response = await fetch(url, options)
+        };
+
+        const response = await fetch(url, options);
+
         if (response.status !== 201 && response.status !== 200) {
             const data = await response.json()
             alert(data.message)
@@ -39,43 +50,41 @@ const TransactionUpdateForm = ({ existingTransaction = {}, updateCallback, trans
         }
     };
 
-console.log("sampai ke:", transactionType)
-
     return (
         <form onSubmit={onSubmit}>
             <div>
-                <label htmlFor="banktransactionDate">Date:</label>
+                <label htmlFor="transactionDate">Date:</label>
                 <input
                     type="date"
-                    id="banktransactionDate"
-                    value={banktransactionDate}
-                    onChange={(e) => setBankTransactionDate(e.target.value)}
+                    id="transactionDate"
+                    value={transactionDate}
+                    onChange={(e) => setTransactionDate(e.target.value)}
                 />
             </div>
             <div>
-                <label htmlFor="banktransactionDescription">Description:</label>
+                <label htmlFor="transactionDescription">Description:</label>
                 <input
                     type="text"
-                    id="banktransactionDescription"
-                    value={banktransactionDescription}
-                    onChange={(e) => setBankTransactionDescription(e.target.value)}
+                    id="transactionDescription"
+                    value={transactionDescription}
+                    onChange={(e) => setTransactionDescription(e.target.value)}
                 />
             </div>
             <div>
-                <label htmlFor="banktransactionAmount">Amount:</label>
+                <label htmlFor="transactionAmount">Amount:</label>
                 <input
                     type="number"
-                    id="banktransactionAmount"
-                    value={banktransactionAmount}
-                    onChange={(e) => setBankTransactionAmount(e.target.value)}
+                    id="transactionAmount"
+                    value={transactionAmount}
+                    onChange={(e) => setTransactionAmount(e.target.value)}
                 />
             </div>
             <div>
-<label htmlFor="banktransactionType">Type:</label>
+<label htmlFor="transactionType">Type:</label>
 <select
-    id="banktransactionType"
-    value={banktransactionType}
-    onChange={(e) => setBankTransactionType(e.target.value)}
+    id="transactionType"
+    value={transactionType}
+    onChange={(e) => setTransactionType(e.target.value)}
 >
     <option value="">-- Select Type --</option>
     <option value="DBT">DBT (Debit)</option>
@@ -83,12 +92,12 @@ console.log("sampai ke:", transactionType)
 </select>
             </div>
             <div>
-                <label htmlFor="banktransactionAmountbalance">Balance:</label>
+                <label htmlFor="transactionAmountbalance">Balance:</label>
                 <input
                     type="number"
-                    id="banktransactionAmountbalance"
-                    value={banktransactionAmountbalance}
-                    onChange={(e) => setBankTransactionAmountBalance(e.target.value)}
+                    id="transactionAmountbalance"
+                    value={transactionAmountbalance}
+                    onChange={(e) => setTransactionAmountBalance(e.target.value)}
                 />
             </div>
             <button type="submit">Update</button>

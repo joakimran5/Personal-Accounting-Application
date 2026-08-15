@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const TransactionSheet = ({ currentMonth, updateCallback, transactionType }) => {
+const TransactionSheet = ({ currentMonth, updateCallback, transactionPlatform }) => {
 
     const [rows, setRows] = useState([]);
 
@@ -13,41 +13,23 @@ const handleChange = (index, field, value) => {
 };
 
 const addRow = () => {
+    
 
     const lastRow = rows[rows.length - 1];
-
-    if (transactionType === "bank") {
-
     const updatedRows = [
         ...rows,
         {
-            banktransactionDate: lastRow.banktransactionDate,
-            banktransactionCategory: "",
-            banktransactionDescription: "",
-            banktransactionAmount: "",
-            banktransactionType:  "DBT",
-            banktransactionAmountbalance: ""
+            transactionDate: lastRow.transactionDate,
+            transactionTime: "",
+            transactionCategory: "",
+            transactionDescription: "",
+            transactionAmount: "",
+            transactionType:  "DBT",
+            transactionAmountbalance: "" 
         }
     ];
 
     setRows(calculateBalances(updatedRows));
-
-      } else if (transactionType === "tng") {
-     const updatedRows = [
-            ...rows,
-            {
-                tngtransactionDate: lastRow
-                    ? lastRow.tngtransactionDate
-                    : "",
-                tngtransactionCategory: "",
-                tngtransactionDescription: "",
-                tngtransactionAmount: "",
-                tngtransactionType: "DBT",
-                tngtransactionAmountbalance: ""
-            }
-        ];
-
-        setRows(calculateBalances(updatedRows));
 };
 
 const deleteRow = (index) => {
@@ -61,11 +43,15 @@ const deleteRow = (index) => {
 };
 
 const saveTransactions = async () => {
-
     try {
 
+        const endpoint =
+            transactionPlatform === "bank"
+                ? "http://127.0.0.1:5000/create_bankTransactions"
+                : "http://127.0.0.1:5000/create_tngTransactions";
+
         const response = await fetch(
-            "http://127.0.0.1:5000/create_bankTransactions",
+            endpoint,
             {
                 method: "POST",
                 headers: {
@@ -75,16 +61,18 @@ const saveTransactions = async () => {
             }
         );
 
+        const data = await response.json();
+
         if (response.ok) {
             updateCallback();
         } else {
-            alert("Failed to save transactions.");
+            alert(data.message || "Failed to save transactions.");
         }
 
     } catch (error) {
         console.error(error);
+        alert("Error connecting to server.");
     }
-
 };
 
 const [categories, setCategories] = useState([]);
@@ -97,7 +85,7 @@ const calculateBalances = (updatedRows) => {
 
 
     let balance =
-        Number(updatedRows[0].banktransactionAmountbalance) || 0;
+        Number(updatedRows[0].transactionAmountbalance) || 0;
 
 
     return updatedRows.map((row,index)=>{
@@ -112,22 +100,22 @@ const calculateBalances = (updatedRows) => {
 
 
         const amount =
-            Number(row.banktransactionAmount) || 0;
+            Number(row.transactionAmount) || 0;
 
 
-        if(row.banktransactionType === "DBT"){
+        if(row.transactionType === "DBT"){
             balance -= amount;
         }
 
 
-        if(row.banktransactionType === "CDT"){
+        if(row.transactionType === "CDT"){
             balance += amount;
         }
 
 
         return {
             ...row,
-            banktransactionAmountbalance:
+            transactionAmountbalance:
                 balance.toFixed(2)
         };
 
@@ -159,17 +147,16 @@ useEffect(() => {
 
     setRows([
         {
-            banktransactionDate: firstDay,
-            banktransactionCategory: "",
-            banktransactionDescription: "",
-            banktransactionAmount: "",
-            banktransactionType: "DBT",
-            banktransactionAmountbalance: ""
+            transactionDate: firstDay,
+            transactionCategory: "",
+            transactionDescription: "",
+            transactionAmount: "",
+            transactionType: "DBT",
+            transactionAmountbalance: ""
         }
     ]);
 
 }, [currentMonth]);
-
 
     return (
 <div>
@@ -177,11 +164,16 @@ useEffect(() => {
 <thead>
 <tr>
 <th>Date</th>
+ {transactionPlatform === "tng" && (
+            <th>Time</th>
+        )}
 <th>Category</th>
 <th>Description</th>
 <th>Amount</th>
 <th>Type</th>
-<th>Balance</th>
+{transactionPlatform !== "tng" && (
+            <th>Balance</th>
+        )}
 <th>Erase</th>
 </tr>
 </thead>
@@ -196,21 +188,35 @@ useEffect(() => {
 <td>
 <input
 type="date"
-value={row.banktransactionDate}
+value={row.transactionDate}
 onChange={(e)=>
-handleChange(index,"banktransactionDate",e.target.value)}
+handleChange(index,"transactionDate",e.target.value)}
 />
 </td>
-
+  {transactionPlatform === "tng" && (
+        <td>
+            <input
+                type="time"
+                value={row.transactionTime}
+                onChange={(e) =>
+                    handleChange(
+                        index,
+                        "transactionTime",
+                        e.target.value
+                    )
+                }
+            />
+        </td>
+    )}
 
 <td>
     <input
         list="categoryOptions"
-        value={row.banktransactionCategory}
+        value={row.transactionCategory}
         onChange={(e) =>
             handleChange(
                 index,
-                "banktransactionCategory",
+                "transactionCategory",
                 e.target.value
             )
         }
@@ -234,9 +240,9 @@ handleChange(index,"banktransactionDate",e.target.value)}
 <td>
 <input
 list="descriptionOptions"
-value={row.banktransactionDescription}
+value={row.transactionDescription}
 onChange={(e)=>
-handleChange(index,"banktransactionDescription",e.target.value)}
+handleChange(index,"transactionDescription",e.target.value)}
 />
     <datalist id="descriptionOptions">
 
@@ -256,9 +262,9 @@ handleChange(index,"banktransactionDescription",e.target.value)}
 <td>
 <input
 type="number"
-value={row.banktransactionAmount}
+value={row.transactionAmount}
 onChange={(e)=>
-handleChange(index,"banktransactionAmount",e.target.value)}
+handleChange(index,"transactionAmount",e.target.value)}
 />
 </td>
 
@@ -266,9 +272,9 @@ handleChange(index,"banktransactionAmount",e.target.value)}
 <td>
 
 <select
-value={row.banktransactionType}
+value={row.transactionType}
 onChange={(e)=>
-handleChange(index,"banktransactionType",e.target.value)
+handleChange(index,"transactionType",e.target.value)
 }
 >
 
@@ -279,7 +285,8 @@ handleChange(index,"banktransactionType",e.target.value)
 
 </td>
 
-
+ {transactionPlatform !== "tng" && (
+            
 <td>
 
 {
@@ -287,11 +294,11 @@ index === 0 ?
 
 <input
 type="number"
-value={row.banktransactionAmountbalance}
+value={row.transactionAmountbalance}
 onChange={(e)=>
 handleChange(
 index,
-"banktransactionAmountbalance",
+"transactionAmountbalance",
 e.target.value
 )}
 />
@@ -300,13 +307,14 @@ e.target.value
 
 <input
 type="number"
-value={row.banktransactionAmountbalance}
+value={row.transactionAmountbalance}
 readOnly
 />
 
 }
 
 </td>
+        )}
 
 
 <td>
