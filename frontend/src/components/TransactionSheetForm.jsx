@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const BankTransactionSheet = ({ currentMonth, updateCallback }) => {
+const TransactionSheet = ({ currentMonth, updateCallback, transactionType }) => {
 
     const [rows, setRows] = useState([]);
 
@@ -16,6 +16,8 @@ const addRow = () => {
 
     const lastRow = rows[rows.length - 1];
 
+    if (transactionType === "bank") {
+
     const updatedRows = [
         ...rows,
         {
@@ -29,15 +31,33 @@ const addRow = () => {
     ];
 
     setRows(calculateBalances(updatedRows));
+
+      } else if (transactionType === "tng") {
+     const updatedRows = [
+            ...rows,
+            {
+                tngtransactionDate: lastRow
+                    ? lastRow.tngtransactionDate
+                    : "",
+                tngtransactionCategory: "",
+                tngtransactionDescription: "",
+                tngtransactionAmount: "",
+                tngtransactionType: "DBT",
+                tngtransactionAmountbalance: ""
+            }
+        ];
+
+        setRows(calculateBalances(updatedRows));
 };
 
 const deleteRow = (index) => {
+    if (rows.length === 1) {
+        alert("At least one row is required.");
+        return;
+    }
 
-    const updatedRows =
-        rows.filter((_, i) => i !== index);
-
+    const updatedRows = rows.filter((_, i) => i !== index);
     setRows(calculateBalances(updatedRows));
-
 };
 
 const saveTransactions = async () => {
@@ -317,4 +337,4 @@ Save All
 };
 
 
-export default BankTransactionSheet
+export default TransactionSheet

@@ -5,14 +5,12 @@ const normalizeDate = (dateString) => {
   return new Date(dateString).toISOString().split("T")[0];
 };
 
-const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
+const TransactionUpdateForm = ({ existingTransaction = {}, updateCallback, transactionType }) => {
     const [banktransactionDate, setBankTransactionDate] = useState(normalizeDate(existingTransaction.banktransactionDate) || "");
     const [banktransactionDescription, setBankTransactionDescription] = useState(existingTransaction.banktransactionDescription || "");
     const [banktransactionAmount, setBankTransactionAmount] = useState(existingTransaction.banktransactionAmount || "");
     const [banktransactionType, setBankTransactionType] = useState(existingTransaction.banktransactionType || "");
     const [banktransactionAmountbalance, setBankTransactionAmountBalance] = useState(existingTransaction.banktransactionAmountbalance || "");
-
-    const updating = Object.entries(existingTransaction).length !== 0
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -24,9 +22,9 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
             banktransactionType,
             banktransactionAmountbalance
         }
-        const url = "http://127.0.0.1:5000/" + (updating ? `update_bankTransaction/${existingTransaction.banktransactionId}` : "create_bankTransaction")
+        const url = `http://127.0.0.1:5000/update_bankTransaction/${existingTransaction.banktransactionId}`
         const options = {
-            method: updating ? "PATCH" : "POST",
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -41,7 +39,7 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
         }
     };
 
-
+console.log("sampai ke:", transactionType)
 
     return (
         <form onSubmit={onSubmit}>
@@ -73,14 +71,7 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
                 />
             </div>
             <div>
-                {/* <label htmlFor="banktransactionType">Type:</label>
-                <input
-                    type="text"
-                    id="banktransactionType"
-                    value={banktransactionType}
-                    onChange={(e) => setBankTransactionType(e.target.value)}
-                /> */}
-                <label htmlFor="banktransactionType">Type:</label>
+<label htmlFor="banktransactionType">Type:</label>
 <select
     id="banktransactionType"
     value={banktransactionType}
@@ -100,11 +91,9 @@ const BankTransactionForm = ({ existingTransaction = {}, updateCallback }) => {
                     onChange={(e) => setBankTransactionAmountBalance(e.target.value)}
                 />
             </div>
-            <button type="submit">{updating ? "Update" : "Create"}</button>
+            <button type="submit">Update</button>
         </form>
         
     );
 };
-
-
-export default BankTransactionForm
+export default TransactionUpdateForm

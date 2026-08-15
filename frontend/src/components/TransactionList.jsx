@@ -1,12 +1,14 @@
 import Button from '@mui/material/Button';
 
-const BankTransactionList = ({ 
+const TransactionList = ({ 
     transactions,  
     updateTransaction, 
     updateCallback,
     previousMonth,
     nextMonth,
-    currentMonth 
+    currentMonth,
+    transactionType 
+
 }) => {
 
     const onDelete = async (tsc_id) => {
@@ -197,5 +199,4 @@ const BankTransactionList = ({
     );
 };
 
-
-export default BankTransactionList;
+export default TransactionList;
