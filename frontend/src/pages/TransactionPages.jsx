@@ -2,6 +2,52 @@ import { useState, useEffect } from "react";
 import TransactionList from "../components/TransactionList";
 import TransactionUpdateForm from "../components/TransactionUpdateForm";
 import TransactionSheet from "../components/TransactionSheetForm";
+import Button from '@mui/material/Button';
+import { styled, alpha } from '@mui/material/styles';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  paddingLeft: '1150px',
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(1),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  width: '100%',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '20ch',
+      },
+    },
+  },
+}));
 
 function TransactionPage() {
     const [transactionPlatform, setTransactionPlatform] = useState("bank");
@@ -80,13 +126,38 @@ const closeSheetModal = () => {
 
 return(
 <>
-  <button onClick={() => setTransactionPlatform("bank")}>
+<Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
+<Button 
+                style={{ marginLeft: '950px'}}
+                variant="contained"
+                color="warning"
+                onClick={() => setTransactionPlatform("bank")}
+            >
+                Bank
+            </Button>
+<Button 
+                style={{ marginLeft: '10px'}}
+                variant="contained"
+                color="success"
+                onClick={() => setTransactionPlatform("tng")}
+            >
+                TnG
+            </Button>
+  {/* <button onClick={() => setTransactionPlatform("bank")}>
     Bank
 </button>
 
 <button onClick={() => setTransactionPlatform("tng")}>
     TnG
-</button>
+</button> */}
  <TransactionList 
       transactions={transactions} 
       updateTransaction={openEditModal} 
@@ -107,7 +178,15 @@ return(
         </div>
       </div>
       }
-      <button onClick={openSheetModal}>Open Transaction Sheet</button>
+      <Button 
+                
+                style={{ marginTop: '20px' , marginLeft: '120px'}}
+                variant="contained"
+                color="error"
+                onClick={openSheetModal}
+            >
+                Open Transaction Sheet
+            </Button>
       {isSheetOpen && 
 <div className="modal">
 
